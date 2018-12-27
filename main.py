@@ -2,7 +2,7 @@ import yaml
 import gi
 from weather import Weather
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk, Gdk, GLib
 
 
 class WeatherAppWindow (Gtk.Window):
@@ -36,31 +36,72 @@ class WeatherAppWindow (Gtk.Window):
         print("Goodbye")
 
 
+class ProgressBarWindow(Gtk.Window):
+
+    def __init__(self, populate):
+        self.populate = populate
+        Gtk.Window.__init__(self, title="Setup")
+        self.connect("show", self.show_bar)
+        self.set_border_width(10)
+
+        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        self.add(vbox)
+
+        self.progressbar = Gtk.ProgressBar()
+        self.progressbar.set_show_text(True)
+        self.progressbar.set_text("Running first time setup...")
+        vbox.pack_start(self.progressbar, True, True, 0)
+
+        # self.timeout_id = GLib.timeout_add(50, self.on_timeout, None)
+        self.activity_mode = False
+
+    def show_bar(self, data=None):
+        for chunk in self.populate():
+            print(chunk)
+            new_value = self.progressbar.get_fraction() + 0.1
+
+            if new_value > 1:
+                new_value = 0
+
+            self.progressbar.set_fraction(new_value)
+
+    def on_show_text_toggled(self, button):
+        show_text = button.get_active()
+        if show_text:
+            text = "some text"
+        else:
+            text = None
+        self.progressbar.set_text(text)
+        self.progressbar.set_show_text(show_text)
+
+    def on_timeout(self, user_data):
+        """
+        Update value on the progress bar
+        """
+        if self.activity_mode:
+            self.progressbar.pulse()
+        else:
+            new_value = self.progressbar.get_fraction() + 0.01
+
+            if new_value > 1:
+                new_value = 0
+
+            self.progressbar.set_fraction(new_value)
+
+        # As this is a timeout function, return True so that it
+        # continues to get called
+        return True
+
+
 with open("conf.yaml") as conf_file:
     conf = yaml.load(conf_file, Loader=yaml.Loader)
 
 weather = Weather(conf)
 
-# Have a pro subscription? Then use:
-# owm = pyowm.OWM(API_key='your-API-key', subscription_type='pro')
+if weather.get_count_locations() == 0:
+    weather.populate_db()
 
-# Search for current weather in London (Great Britain)
-#observation = owm.weather_at_place('London,GB')
-#w = observation.get_weather()
-#print(w)                      # <Weather - reference time=2013-12-18 09:20,
-                              # status=Clouds>
-
-# Weather details
-#w.get_wind()                  # {'speed': 4.6, 'deg': 330}
-#w.get_humidity()              # 87
-#w.get_temperature('celsius')  # {'temp_max': 10.5, 'temp': 9.7, 'temp_min': 9.0}
-
-# Search current weather observations in the surroundings of
-# lat=22.57W, lon=43.12S (Rio de Janeiro, BR)
-#observation_list = owm.weather_around_coords(-22.57, -43.12)
-
-
-window = WeatherAppWindow()
-window.connect("destroy", Gtk.main_quit)
-window.show_all()
-Gtk.main()
+    #progress = ProgressBarWindow(weather.populate_db)
+    #progress.connect("destroy", Gtk.main_quit)
+    #progress.show_all()
+    #Gtk.main()
