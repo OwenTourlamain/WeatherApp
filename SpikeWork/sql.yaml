@@ -1,0 +1,39 @@
+#To-Do: include table names dynamically
+
+locations-table: "Location"
+
+records-table: "WeatherRecord"
+
+countries-table: "Country"
+
+create-location-table: "
+CREATE TABLE IF NOT EXISTS 'Location' (
+  'ID' INT NOT NULL,
+  'Country' INT NOT NULL,
+  'Name' VARCHAR(255) NOT NULL,
+  'Lon' DECIMAL NOT NULL,
+  'Lat' DECIMAL NOT NULL,
+  PRIMARY KEY ('ID')
+);"
+
+create-record-table: "
+CREATE TABLE IF NOT EXISTS 'WeatherRecord' (
+  'ID' INT NOT NULL AUTO_INCREMENT,
+  'Date' DATE NOT NULL,
+  'Temp' FLOAT NOT NULL,
+  'Location' INT NOT NULL,
+  PRIMARY KEY ('ID')
+);"
+
+create-country-table: "
+CREATE TABLE IF NOT EXISTS 'Country' (
+  'Id' INT NOT NULL AUTO_INCREMENT,
+  'Name' VARCHAR(255) NOT NULL,
+  PRIMARY KEY ('Id')
+);"
+
+add-fk-locations: "ALTER TABLE 'Location' ADD CONSTRAINT 'Location_fk0' FOREIGN KEY ('Country') REFERENCES 'Countries'('Id');"
+
+add-fk-records: "ALTER TABLE 'WeatherRecord' ADD CONSTRAINT 'WeatherRecord_fk0' FOREIGN KEY ('Location') REFERENCES 'Location'('ID');"
+
+get-count-locations: "SELECT COUNT(*) FROM Location;"
