@@ -3,6 +3,7 @@ UI Design: https://app.moqups.com/OwenT/N07oYnmbfb/view/page/ad64222d5
 
 Database Schema:
 
+```sql
 CREATE TABLE `Location` (  
   `ID` INT NOT NULL,  
   `Country` INT NOT NULL,  
@@ -28,3 +29,4 @@ CREATE TABLE `Countries` (
   `Name` VARCHAR(255) NOT NULL,  
   PRIMARY KEY (`Id`)  
 );  
+```
