@@ -1,4 +1,4 @@
-System Design: https://go.gliffy.com/go/publish/12885630
+System Design: https://go.gliffy.com/go/publish/12885630  
 UI Design: https://app.moqups.com/OwenT/N07oYnmbfb/view/page/ad64222d5
 
 Database Schema:
